@@ -1,41 +1,38 @@
-const NewsData = [
-  {
-    id: 1,
-    title: "What is Lorem Ipsum?",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    bannerImg:
-      "https://drive.google.com/drive-viewer/AKGpiha4XI_kPqtaIjsofBKmTiC2TD7CT_OP8yJJdCv-uwAWiO4XiJgRS48qUwvxEhAtUKuBxJz8BcWy7ZZuLPq1HTx7kBnzSBO0cA=s1600-rw-v1",
-  },
-  {
-    id: 2,
-    title: "Why do we use it? & what its for?",
-    desc: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-    bannerImg:
-      "https://drive.google.com/drive-viewer/AKGpihYSBa4I0FHrMLD7e-wR0M4XYdG6q4_b-pV1uwlUEdxfU1R_GOYyiXSYsbBG8Q76As9pi0-4Olf3Sk3uvXe0ZRz6rzvOp9VSnQ=s1600-rw-v1",
-  },
-  {
-    id: 3,
-    title: "Lorem ipsum dolor sit amet.",
-    desc: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Incidunt, optio?",
-    bannerImg:
-      "https://drive.google.com/drive-viewer/AKGpihYZhoYNQeObcta1JQtahRDwsyKT8yrJD7RSSVT2kgSCWvXAnUf4DVLvf4qg5UOWDcCpD_JgWlko1lCFm2OvDqfKbjZNiL9IE9k=s1600-rw-v1",
-  },
-];
+import NewsFeed from "../models/NewsFeedModel.js";
+
+
 
 // GET all news
-export const getNews = (req, res) => {
-  res.status(200).json(NewsData);
+export const getNews = async (req, res) => {
+  try {
+    const newsData = await NewsFeed.find().sort({ date: -1 }); // Sort by date, newest first
+    res.status(200).json(newsData);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    res.status(500).json({ error: "Failed to fetch news items" });
+  }
 };
 
 // GET single news by ID
-export const getNewsById = (req, res) => {
-  const newsId = parseInt(req.params.id);
-  console.log(newsId);
-  const newsItem = NewsData.find((n) => n.id === newsId);
-  console.log(newsItem);
-  if (!newsItem) {
-    return res.status(404).json({ error: "News item not found" });
+export const getNewsById = async (req, res) => {
+  // console.log("Fetching news item with ID:", req.params.id);
+  try {
+    const newsId = req.params.id;
+    const newsItem = await NewsFeed.findById(newsId);
+    
+    if (!newsItem) {
+      return res.status(404).json({ error: "News item not found" });
+    }
+    
+    res.status(200).json(newsItem);
+  } catch (error) {
+    console.error("Error fetching news item:", error);
+    
+    // Handle invalid ObjectId format
+    if (error.name === 'CastError') {
+      return res.status(400).json({ error: "Invalid news ID format" });
+    }
+    
+    res.status(500).json({ error: "Failed to fetch news item" });
   }
-
-  res.status(200).json(newsItem);
 };

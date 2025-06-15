@@ -1,18 +1,20 @@
 {
-  "name": "school_api",
+  "name": "pitadeniyacollege-api",
   "version": "1.0.0",
-  "description": "A simple API for managing school portfolio",
-  "main": "index.js",
+  "description": "Pitadeniya college API for dealing with the database",
+  "main": "backend/index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node backend/index.js",
+    "dev": "nodemon backend/index.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongoose": "^8.15.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
   }
 }
